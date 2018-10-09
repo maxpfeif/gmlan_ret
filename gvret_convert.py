@@ -12,10 +12,7 @@
 
 # ------- Desired Output Format -------- 
 # Time Stamp,ID,Extended,Bus,LEN,D1,D2,D3,D4,D5,D6,D7,D8
-# 166064000,0000021A,false,0,8,FE,36,12,FE,69,05,07,AD,
-
-# note that there is some byte stuffing taking place 
-# 174624000,00000116,false,0,6,00,C0,F4,41,96,A2,00,00,
+# 166064000,0000021A,false,0,6,00,C0,F4,41,96,A2,00,00,
 
 #!/usr/bin/python
 import sys 
@@ -38,29 +35,15 @@ with open(sys.argv[1]) as original:
 			if(row.pop(2) == sys.argv[2]):
 				# get the message time from the input file -- convert to micros 
 				msg_time = long(1000000 * float(row.pop(0)))
-				print "msg_time = " 
-				print  msg_time
 
 				# get the data from the input file
 				msg_data = list(row.pop(1))
-				print "msg_data as list = " 
-				print msg_data
+
 				# need to calculate the length of this data and save that parameter to the data_len
 				# check odd-value case 
 				if len(msg_data) % 2 > 0:
 					msg_data.insert(0,"0")					
 				data_len = len(msg_data)/2
-
-
-				print "data_len = " + str(data_len)
-
-				# check the edge case that the length is one, in which we gotta add a char right off the bat 
-				#if data_len < 2:
-				#	b0 = msg_data.pop()
-				#	b0 = "0" + b0 
-				#	msg_data.append(b0)
-				#	print "detected msg data was 1 char/byte"
-				#	print msg_data 
 
 				# need to concatenate every two bytes	
 				for i in range(0,data_len):
@@ -72,20 +55,16 @@ with open(sys.argv[1]) as original:
 					else:	
 						b1 = msg_data.pop()
 					concat = b1 + b0
-					print "concat is " + concat
 					msg_data.insert(0,concat.upper())
-					print msg_data
 
+				# stuff the remaining space 
 				while len(msg_data) < 8:
 					msg_data.insert(0, "00")
-					# then stuff if length < 8  
-				print msg_data
 
-
-				msg_bytes = "" 
-				
-				# finds the data length and converts it to the proper format 
-				addr = str(hex(int(row.pop(0))))
+				# converts the address format and checks for extended ID
+				addr = int(row.pop(0))
+				extended = addr > 4095
+				addr = str(hex(addr))
 				addr =list(addr)
 				addr.remove("x")
 				while len(addr) < 8:
@@ -94,33 +73,16 @@ with open(sys.argv[1]) as original:
 				while len(addr) > 0:
 					str_addr = str(addr.pop()) + str_addr
 				addr = str_addr.upper()
-					
 
-				# determine if the message id is extendeded by checking whether or not it is greater than 4095 
-				extended = addr > hex(4096)
-				print "extended = " + str(extended) 
-
-				# need to write time, ID, extended, bus, len, then all of the data bytes. I believe this can be done with insert or append 
+				# need to write time, ID, extended, bus, len, then all of the data bytes.
 				msg_data.insert(0, data_len)
-				print "inserted data len into msg_data"
-				print msg_data
 				msg_data.insert(0, sys.argv[2])
-				print "inserted bus no into msg_data"
-				print msg_data
 				if extended:
 					msg_data.insert(0,"true")
 				else: 
 					msg_data.insert(0,"false")
-				print "inserted extended into msg_data"
-				print msg_data
 				msg_data.insert(0,addr)
-				print "inserted address into msg_data"
-				print msg_data
 				msg_data.insert(0,msg_time)
-				print "inserted time into msg_data"
-				print msg_data
-
-				# now we gotta write dis ish to the output file 
 				gvret_writer.writerow(msg_data)
 
 
