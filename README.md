@@ -1,16 +1,16 @@
-# Python tools used to process bus logs from Cabana in SavvyCAN  
-
-These tools can process CAN traffic recorded using Panda to create diff outputs for two input files.
+# Python tools used to convert bus logs from Cabana to SavvyCAN formats   
 
 Runing 
 ```
-python gmlan_ret.py "control_filename.csv" "test_filename.csv"
+python get_diffs.py "control_filename.csv" "test_filename.csv"
 ```
-should create two output files in that directory; new_log.csv and lost_log.csv that contain the messages exclusive to each. 
+creates two output files; new_log.csv and lost_log.csv 
 
 new_log.csv contains messages exclusive to "test_filename.csv"  
 
 lost_log.csv contains messages exclusive to "control_filename.csv
+
+common messages to the two files are removed from both outputs 
 
 # Converting Cabana Log Files to SavvyCAN Generic.csv Format 
 
