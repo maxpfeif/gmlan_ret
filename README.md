@@ -1,16 +1,16 @@
-# GMLAN Reverse Engineering Tools used to process bus logs from Cabana in SavvyCAN and Python 
+# Python tools used to process bus logs from Cabana in SavvyCAN  
 
-CAN traffic recorded using Panda can be used witht these tools to.. 
-2. Process Diff outputs for new messages relative to the control
-3. Process Diff outpurs for missing messages relatie to the control 
+These tools can process CAN traffic recorded using Panda to create diff outputs for two input files.
 
 Runing 
 ```
 python gmlan_ret.py "control_filename.csv" "test_filename.csv"
 ```
-should create three output files in that directory; filename_new.csv and filename_lost.csv 
+should create two output files in that directory; new_log.csv and lost_log.csv that contain the messages exclusive to each. 
 
-The three files contain all, new and old bus traffic differences respectively. 
+new_log.csv contains messages exclusive to "test_filename.csv"  
+
+lost_log.csv contains messages exclusive to "control_filename.csv
 
 # Converting Cabana Log Files to SavvyCAN Generic.csv Format 
 
