@@ -14,6 +14,8 @@
 # Time Stamp,ID,Extended,Bus,LEN,D1,D2,D3,D4,D5,D6,D7,D8
 # 166064000,0000021A,false,0,6,00,C0,F4,41,96,A2,00,00,
 
+# ------- TODO - CHECK WHY THE HEX FORMAT IS NOT BEING READ PROPERLY, need to put the plug bits at the END, this is an endian issue 
+
 #!/usr/bin/python
 import sys 
 import csv
@@ -59,7 +61,7 @@ with open(sys.argv[1]) as original:
 
 				# stuff the remaining space 
 				while len(msg_data) < 8:
-					msg_data.insert(0, "00")
+					msg_data.append("00")
 
 				# converts the address format and checks for extended ID
 				addr = int(row.pop(0))
