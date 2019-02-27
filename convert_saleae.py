@@ -9,6 +9,9 @@
 #
 #	Output: cabana_saleae_logfile.csv in the proper format 
 #
+#
+#	TODO: VERIFY AND FIX THE HEX DATA CONVERSION 
+#
 #!/usr/bin/python
 import sys 
 import csv
@@ -78,8 +81,8 @@ def extract_hex(in_list):
 
 # saves the present message content 
 # resets the message content variables
-def save_message(): 
-	output_writer.writerow([time, can_id, sys.argv[2], data])
+def save_message(content): 
+	output_writer.writerow(content)
 	time = 0 
 	data = "" 
 
@@ -96,9 +99,18 @@ for row in og_data:
 	
 		if(is_header(row_data)):
 			if(can_id > 0): # if we're not in the initial case where the can_id = 0 
-				save_message()
+				save_message([time, can_id, sys.argv[2], data])
 				data = ""
 			can_id = extract_hex(row_data)
+			can_id = list(can_id)
+			can_id.pop(0)
+			can_id.pop(0)
+			string_id =""
+			while(len(can_id)):
+				string_id = string_id + can_id.pop(0)
+
+			can_id = int(string_id, 16)
+
 
 		elif(is_data(row_data)): 
 			hex_data = list(extract_hex(row_data))

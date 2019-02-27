@@ -123,7 +123,8 @@ def save_lost_messages():
 			if entry in lost_ids:
 				output.append(arb_id)
 				output.append(bus)
-				output.append(row.pop(0))
+				if(len(row)):
+					output.append(row.pop(0))
 				lost_writter.writerow(output)
 
 	control.close()
@@ -137,7 +138,7 @@ populate_variant_ids()
 detect_lost_ids()
 detect_new_ids()
 
-# having generated these lists, lets create the three desired files 
+# having generated these lists, lets create the desired files 
 save_new_messages()
 save_lost_messages()	
 

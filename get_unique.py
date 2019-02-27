@@ -12,6 +12,7 @@
 #!/usr/bin/python
 import sys 
 import csv
+from classify_ecu import * 
 
 target_bus = sys.argv[2]
 filename = sys.argv[1]
@@ -32,9 +33,9 @@ def get_unique_messages(filename, target_bus):
 			arb_id = row.pop(0)
 			bus = row.pop(0)
 			if bus == target_bus: 
-				message = row.pop(0)
-				entry = [arb_id, bus, message] 
-				if entry not in unique_ids:
+				data = row.pop(0)
+				entry = [arb_id, bus, data] 
+				if entry not in unique_id_msgs:
 					unique_id_msgs.append(entry)
 	control.close()
 	return unique_id_msgs
@@ -62,7 +63,7 @@ def save_unique_messages():
 	new_log = open("unique_messages.csv", "w+")							
 	new_writter = csv.writer(new_log, delimiter = ",")
 	new_writter.writerow(["addr","bus","data"])  
-	for row in unique_ids:
+	for row in unique_id_msgs:
 		new_writter.writerow(row)
 	new_log.close()
 
@@ -71,8 +72,29 @@ def save_unique_messages():
 def save_unique_ids():	
 	new_log = open("unique_ids.csv", "w+")							
 	new_writter = csv.writer(new_log, delimiter = ",")
-	new_writter.writerow(["ID List"])  
-	for row in unique_ids:
-		new_writter.writerow(row)
+	new_writter.writerow(["ID List","Priority","Arbitration","ECU ID", "ECU FAMILY"]) 
+
+
+	for item in unique_ids:
+		if(item > 4095): # extended ID, lets print some additional information 
+			# find the priority 
+			priority = int(item) >> 26
+
+			# find the arb id
+			arbitration = (int(item) >> 13) & 8191
+
+			# find the ecu id 
+			ecu_id = hex(int(item) & 8191)
+
+			ecu_fam = classify_ecu(int(item) & 8191)
+
+			new_writter.writerow([item, priority, arbitration, ecu_id, ecu_fam])
+		else: 
+			new_writter.writerow([item])
 	new_log.close()
 
+# for standalone operation 
+get_unique_messages(filename, target_bus)
+get_unique_ids(filename, target_bus)
+save_unique_messages()
+save_unique_ids()

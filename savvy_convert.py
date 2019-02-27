@@ -32,7 +32,7 @@ with open(sys.argv[1]) as original:
 				msg_data = list(row.pop(2))
 				msg_bytes = "" 
 				addr = str(hex(int(row.pop(1))))
-				addr =list(addr)
+				addr = list(addr)
 				addr.remove("x")
 				while len(addr) < 8:
 					addr.insert(0,0) 
@@ -42,14 +42,15 @@ with open(sys.argv[1]) as original:
 				addr = str_addr.upper()
 
 				# generate and write the data bytes in hex, upper 
-				if len(msg_data) == 1: 
-					savvy_writer.writerow([addr, "0"+(msg_data.pop(0)).upper()]) 
-				elif len(msg_data) < 2: 
-					savvy_writer.writerow([addr,(msg_data.pop(0)+msg_data.pop[0]).upper()])
-				else: 
-					for i in range(0,len(msg_data)/2): 
-						msg_bytes+=msg_data.pop(0)+msg_data.pop(0)+ " "
-					savvy_writer.writerow([addr, msg_bytes.upper()])
+				if(len(msg_data)):	# making sure its not empty 
+					if len(msg_data) == 1: 
+						savvy_writer.writerow([addr, "0"+(msg_data.pop(0)).upper()]) 
+					elif len(msg_data) < 2: 
+						savvy_writer.writerow([addr,(msg_data.pop(0)+msg_data.pop[0]).upper()])
+					else: 
+						for i in range(0,len(msg_data)/2): 
+							msg_bytes+=msg_data.pop(0)+msg_data.pop(0)+ " "
+						savvy_writer.writerow([addr, msg_bytes.upper()])
 
 savvy_data.close()
 original.close()
